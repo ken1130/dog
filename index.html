@@ -32,6 +32,89 @@
     .mao-desk { display:none; }
     .mao-burger { display:grid; }
   }
+
+  /* ── LINE 浮動聯絡按鈕 ─────────────────────────── */
+  .mao-line-fab {
+    position:fixed; z-index:60;
+    right:20px; bottom:calc(20px + env(safe-area-inset-bottom,0px));
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none;
+  }
+  .mao-line-fab:hover, .mao-line-fab:focus { text-decoration:none; }
+  .mao-line-fab__label {
+    background:#fff; color:var(--ink-800);
+    font-size:14px; font-weight:700; line-height:1; white-space:nowrap;
+    padding:11px 15px; border-radius:999px;
+    box-shadow:0 6px 20px rgba(20,32,27,0.16);
+    opacity:0; transform:translateX(10px); pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+  }
+  .mao-line-fab:hover .mao-line-fab__label,
+  .mao-line-fab:focus-visible .mao-line-fab__label { opacity:1; transform:translateX(0); }
+  .mao-line-fab__btn {
+    position:relative; flex:none;
+    width:60px; height:60px; border-radius:50%;
+    background:#06C755; display:grid; place-items:center;
+    box-shadow:0 8px 24px rgba(6,199,85,0.36), 0 2px 6px rgba(20,32,27,0.16);
+    transition:transform .22s ease, box-shadow .22s ease;
+  }
+  .mao-line-fab__btn::before {
+    content:""; position:absolute; inset:0; border-radius:50%;
+    background:#06C755; opacity:.5;
+    animation:maoLinePulse 2.6s cubic-bezier(.4,0,.6,1) infinite;
+  }
+  .mao-line-fab__btn svg {
+    position:relative; width:32px; height:32px; fill:#fff;
+  }
+  .mao-line-fab:hover .mao-line-fab__btn {
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 14px 32px rgba(6,199,85,0.44), 0 3px 8px rgba(20,32,27,0.18);
+  }
+  .mao-line-fab:active .mao-line-fab__btn { transform:translateY(0) scale(.96); }
+  .mao-line-fab:focus-visible .mao-line-fab__btn {
+    outline:3px solid var(--ink-900); outline-offset:3px;
+  }
+  @keyframes maoLinePulse {
+    0%   { transform:scale(1);    opacity:.5; }
+    70%  { transform:scale(1.75); opacity:0;  }
+    100% { transform:scale(1.75); opacity:0;  }
+  }
+  @media (max-width:820px) {
+    .mao-line-fab { right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); }
+    .mao-line-fab__label { display:none; }
+    .mao-line-fab__btn { width:56px; height:56px; }
+    .mao-line-fab__btn svg { width:30px; height:30px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .mao-line-fab__btn::before { animation:none; opacity:0; }
+    .mao-line-fab__label, .mao-line-fab__btn { transition:none; }
+  }
+
+  /* 圖片安全網：載入失敗或未填圖時，退化成品牌色柔和底，不顯示編輯器佔位框 */
+  image-slot::part(ring) { display:none; }
+  image-slot::part(frame) {
+    background:linear-gradient(135deg, var(--green-100) 0%, var(--green-50) 55%, var(--coral-50) 100%);
+  }
+  image-slot::part(empty) { color:var(--green-700); }
+
+  /* ── RWD 修正 ───────────────────────────────────────
+     平板寬度下 4 格內容會排成 3+1 落單，改成 2x2 比較整齊 */
+  @media (max-width:960px) {
+    .mao-g-hot, .mao-g-sell { grid-template-columns:repeat(2,1fr) !important; }
+  }
+  /* 手機維持 2 欄商品，避免一張商品圖佔滿整個螢幕、要滑很久 */
+  @media (max-width:560px) {
+    .mao-g-hot, .mao-g-shop, .mao-g-rel {
+      grid-template-columns:repeat(2,1fr) !important; gap:12px !important;
+    }
+    .mao-g-sell { grid-template-columns:repeat(2,1fr) !important; gap:22px !important; }
+    .mao-g-cats { gap:12px !important; }
+  }
+
+  /* 平板 2 欄時卡片變寬，1:1 商品圖會高到一頁只看得到兩張 —— 這段壓成 4:3 */
+  @media (min-width:561px) and (max-width:960px) {
+    .mao-card-img { aspect-ratio:4/3 !important; }
+  }
 </style>
 </helmet>
 
@@ -113,7 +196,7 @@
     </section>
 
     <section style="max-width:1180px;margin:0 auto;padding:44px 20px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+      <div class="mao-g-cats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
         <sc-for list="{{ cats }}" as="c" hint-placeholder-count="3">
           <div onClick="{{ c.go }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
             <div style="position:relative;width:100%;height:150px;background:#cfe3c4">
@@ -133,10 +216,10 @@
         <h2 style="font-family:var(--font-display);font-size:clamp(24px,3vw,32px);margin:0">本月毛孩點播率最高</h2>
         <button onClick="{{ goShopAll }}" style="background:none;border:none;color:var(--color-primary-press);font-size:14px;font-weight:700;cursor:pointer;padding:0;white-space:nowrap">看全部 →</button>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
+      <div class="mao-g-hot" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
         <sc-for list="{{ hot }}" as="p" hint-placeholder-count="4">
           <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
-            <div style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
+            <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
               <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
               <div style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.9);backdrop-filter:blur(6px);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;color:var(--color-accent)">{{ p.badge }}</div>
             </div>
@@ -152,7 +235,7 @@
     </section>
 
     <section style="background:#fff;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
-      <div style="max-width:1180px;margin:0 auto;padding:48px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px">
+      <div style="max-width:1180px;margin:0 auto;padding:48px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px" class="mao-g-sell">
         <sc-for list="{{ selling }}" as="s" hint-placeholder-count="4">
           <div>
             <div style="width:42px;height:42px;border-radius:14px;background:var(--color-primary-tint);display:grid;place-items:center;margin-bottom:14px">
@@ -167,7 +250,7 @@
 
     <section style="max-width:1180px;margin:0 auto;padding:56px 20px 8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:36px;align-items:center">
       <div style="position:relative;width:100%;aspect-ratio:1/1;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card);background:#cfe3c4">
-        <image-slot id="mao-about-teaser" shape="rect" placeholder="店主與毛孩的合照"></image-slot>
+        <image-slot id="mao-about-teaser" shape="rect" src="uploads/mao-cattreat.jpg" placeholder="店主與毛孩的合照"></image-slot>
       </div>
       <div>
         <div style="font-size:13px;font-weight:700;color:var(--color-primary-press);letter-spacing:1px;margin-bottom:12px">關於毛球崛起</div>
@@ -235,7 +318,7 @@
     <div style="font-size:13px;font-weight:700;color:var(--color-primary-press);letter-spacing:1px;margin-bottom:14px">關於我們</div>
     <h1 style="font-family:var(--font-display);font-size:clamp(28px,4.4vw,44px);margin:0 0 20px;line-height:1.2;text-wrap:pretty">一切都是因為一隻拒吃八種飼料的貓</h1>
     <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:32px;background:#cfe3c4">
-      <image-slot id="mao-about-hero" shape="rect" placeholder="品牌故事主圖：店主與毛孩"></image-slot>
+      <image-slot id="mao-about-hero" shape="rect" src="uploads/mao-owner.jpg" placeholder="品牌故事主圖：店主與毛孩"></image-slot>
     </div>
     <div style="display:flex;flex-direction:column;gap:26px;font-size:17px;line-height:1.85;color:var(--ink-700)">
       <sc-for list="{{ story }}" as="s" hint-placeholder-count="4">
@@ -281,10 +364,10 @@
       </div>
     </div>
     <div style="font-size:14px;color:var(--text-tertiary);margin-bottom:16px">共 {{ shownCount }} 件商品</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
+    <div class="mao-g-shop" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
       <sc-for list="{{ shown }}" as="p" hint-placeholder-count="6">
         <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
-          <div style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
+          <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
             <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
           </div>
           <div style="padding:16px;display:flex;flex-direction:column;gap:8px;flex:1">
@@ -341,10 +424,10 @@
     </div>
     <div style="margin-top:56px">
       <h2 style="font-family:var(--font-display);font-size:24px;margin:0 0 18px">也可以看看</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px">
+      <div class="mao-g-rel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px">
         <sc-for list="{{ related }}" as="p" hint-placeholder-count="3">
           <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
-            <div style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
+            <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
               <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
             </div>
             <div style="padding:14px">
@@ -399,37 +482,46 @@
       <div style="max-width:1180px;margin:0 auto;padding:18px 20px;font-size:12px;color:var(--ink-400)">© 2026 毛球崛起 Furball Rise</div>
     </div>
   </footer>
+
+  <!-- LINE 聯絡按鈕：把下面 href 換成你的 LINE 官方帳號連結即可 -->
+  <a class="mao-line-fab" href="https://line.me/R/ti/p/@YOUR_LINE_ID"
+     target="_blank" rel="noopener noreferrer" aria-label="用 LINE 聯絡毛球崛起">
+    <span class="mao-line-fab__label">LINE 線上客服</span>
+    <span class="mao-line-fab__btn">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+    </span>
+  </a>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;shopUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://myship.7-11.com.tw/&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;賣場&quot;},&quot;freeShipThreshold&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:990,&quot;min&quot;:0,&quot;max&quot;:3000,&quot;step&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;賣場&quot;},&quot;showFaq&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;頁面&quot;}}">
 const PRODUCTS = [
   { id:"fd-chicken", name:"雞胸凍乾", cat:"凍乾", pet:"both", price:180, spec:"30g / 單一原料",
-    badge:"熱賣", tags:["單一蛋白","高蛋白","貓狗共用"], url:"",
+    badge:"熱賣", tags:["單一蛋白","高蛋白","貓狗共用"], url:"", img:"uploads/mao-chicken.jpg",
     desc:"台灣雞胸肉低溫乾燥，切成好入口的小塊。開封的瞬間你會先聞到肉香，然後聽到某人衝過來的腳步聲。",
     ingredients:"雞胸肉 100%。無鹽、無油、無防腐劑。",
     feeding:"當零食每日 5–8 塊；也可捏碎拌入飼料當誘食粉。" },
   { id:"fd-salmon", name:"鮭魚凍乾", cat:"凍乾", pet:"both", price:220, spec:"30g / 挪威鮭魚",
-    badge:"新品", tags:["Omega-3","單一蛋白","毛髮保養"], url:"",
+    badge:"新品", tags:["Omega-3","單一蛋白","毛髮保養"], url:"", img:"uploads/mao-salmon.jpg",
     desc:"挪威鮭魚整片凍乾，天然油脂的香氣很張揚。換季掉毛掉到懷疑人生的時候，補一點好油。",
     ingredients:"鮭魚 100%。",
     feeding:"每日 3–5 片，油脂較高的商品建議搭配正餐一起給。" },
   { id:"fd-duck", name:"鴨胸凍乾", cat:"凍乾", pet:"dog", price:200, spec:"40g / 低敏配方",
-    badge:"低敏", tags:["低敏","單一蛋白","訓練獎勵"], url:"",
+    badge:"低敏", tags:["低敏","單一蛋白","訓練獎勵"], url:"", img:"uploads/mao-duck.webp",
     desc:"對雞肉過敏的狗狗換這款。鴨胸纖維細，掰成小塊拿來當訓練獎勵，坐下握手全部都會。",
     ingredients:"鴨胸肉 100%。",
     feeding:"訓練時每次一小塊，一天不超過 10g。" },
   { id:"sn-chickenstrip", name:"慢烤雞肉條", cat:"零食", pet:"dog", price:120, spec:"50g / 軟質好咬",
-    badge:"人氣", tags:["軟零食","老犬友善","台灣製造"], url:"", img:"uploads/a2899c81950197b35884b6f7912d98a2.webp",
+    badge:"人氣", tags:["軟零食","老犬友善","台灣製造"], url:"", img:"uploads/mao-biltong.jpg",
     desc:"低溫慢烤保留水分，質地偏軟。牙口退休了的老狗也咬得動，不用再看牠對零食乾瞪眼。",
     ingredients:"雞胸肉、雞腿肉、天然植物甘油。",
     feeding:"10kg 以下每日 1–2 條，10kg 以上 2–3 條。" },
   { id:"sn-dental", name:"貓薄荷潔牙餅", cat:"零食", pet:"cat", price:140, spec:"60g / 約 80 顆",
-    badge:"潔牙", tags:["潔牙","貓薄荷","顆粒小"], url:"",
+    badge:"潔牙", tags:["潔牙","貓薄荷","顆粒小"], url:"", img:"uploads/mao-biscuit.jpg",
     desc:"外脆內鬆的雙層口感，咬的時候有摩擦感。加了一點貓薄荷，通常不用叫牠自己就來了。",
     ingredients:"雞肉粉、米、豌豆纖維、貓薄荷、牛磺酸。",
     feeding:"每日 8–10 顆，飯後給效果最好。" },
   { id:"sn-cheese", name:"起司小方塊", cat:"零食", pet:"both", price:130, spec:"40g / 乳酪風味",
-    badge:"貓狗共用", tags:["高鈣","小顆粒","貓狗共用"], url:"",
+    badge:"貓狗共用", tags:["高鈣","小顆粒","貓狗共用"], url:"", img:"uploads/mao-cheese.webp",
     desc:"乳酪加牛奶壓成小方塊，香氣很重。餵藥時把藥包在裡面，通常不會被發現。",
     ingredients:"脫脂乳、乳酪、馬鈴薯澱粉。",
     feeding:"每日 3–5 塊；乳糖不耐的毛孩請先少量嘗試。" },
@@ -515,8 +607,8 @@ class Component extends DCLogic {
         { label:"飼料", go: () => goShop("飼料") },
       ],
       cats: [
-        { label:"零食", desc:"軟的、脆的、潔牙的。訓練跟討好都好用。", slot:"mao-cat-snack", img:"uploads/a2899c81950197b35884b6f7912d98a2.webp", go: () => goShop("零食") },
-        { label:"凍乾", desc:"單一原料，看得出原本是哪塊肉。挑嘴毛孩的第一志願。", slot:"mao-cat-freeze", img:"", go: () => goShop("凍乾") },
+        { label:"零食", desc:"軟的、脆的、潔牙的。訓練跟討好都好用。", slot:"mao-cat-snack", img:"uploads/mao-biscuit2.jpg", go: () => goShop("零食") },
+        { label:"凍乾", desc:"單一原料，看得出原本是哪塊肉。挑嘴毛孩的第一志願。", slot:"mao-cat-freeze", img:"uploads/mao-driedcod.jpg", go: () => goShop("凍乾") },
         { label:"飼料", desc:"無穀主食，貓狗全齡。換糧建議一起附上。", slot:"mao-cat-food", img:"uploads/tw-11134207-820l6-mnn6y0reg1z4b7.webp", go: () => goShop("飼料") },
       ],
       hot: PRODUCTS.slice(0,4).map(p => this.decorate(p)),
