@@ -1,5 +1,11 @@
-# 本機暫存 / 產生的檔案
+# 本機測試 / 暫存產出（RWD 截圖與各頁面狀態的測試副本）
 _cand/
+_t_*
+_w_*
+_q_*
+_d_*
+_v_*
+_f_*
+_s_*
+_live.png
 _shot.png
-_debug.html
-_frame.html

@@ -20,6 +20,9 @@
 <script src="_ds/nofat-design-system-2c47dc22-0e6a-496c-bc25-7ba62cb7cb48/_ds_bundle.js"></script>
 <script src="./image-slot.js"></script>
 <style>
+  /* header 實際高度：商品列表的 sticky 篩選列以此為 top 起點 */
+  :root { --mao-header-h:122px; }
+  @media (max-width:560px) { :root { --mao-header-h:114px; } }
   body { margin:0; background:var(--bg-canvas); color:var(--text-primary);
     font-family:"Noto Sans TC", var(--font-body), "PingFang TC", sans-serif; }
   a { color:var(--text-link); text-decoration:none; }
@@ -115,13 +118,143 @@
   @media (min-width:561px) and (max-width:960px) {
     .mao-card-img { aspect-ratio:4/3 !important; }
   }
+
+  /* ═══ 手機版 UX ═══════════════════════════════════════ */
+
+  /* 點擊回饋：手機沒有 hover，改用按下縮放；順便把 iOS 的藍色高亮換成品牌色 */
+  * { -webkit-tap-highlight-color:rgba(22,185,122,.12); }
+  @media (hover:none) {
+    .mao-card:active { transform:scale(.978); }
+  }
+
+  /* 橫向滾動的 chip 列：藏掉醜的捲軸、用慣性滑動、順手對齊 */
+  .mao-chiprow, .mao-filters > div {
+    scrollbar-width:none; -ms-overflow-style:none;
+    -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;
+  }
+  .mao-chiprow::-webkit-scrollbar, .mao-filters > div::-webkit-scrollbar { display:none; }
+  .mao-chiprow > *, .mao-filters > div > * { scroll-snap-align:start; }
+
+  /* ── 手機常駐購買列（商品頁）────────────────────────
+     滑到成分／餵食建議之後不必再滑回上面才能下單 */
+  .mao-buybar { display:none; }
+  @media (max-width:820px) {
+    .mao-buybar {
+      display:flex; align-items:center; gap:12px;
+      position:fixed; left:0; right:0; bottom:0; z-index:55;
+      padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));
+      background:rgba(255,255,255,.94); backdrop-filter:blur(12px);
+      border-top:1px solid var(--border-subtle);
+      box-shadow:0 -6px 24px rgba(20,32,27,.10);
+    }
+    .mao-buybar__info { min-width:0; flex:1; }
+    .mao-buybar__name {
+      font-size:12px; color:var(--text-tertiary); font-weight:600;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .mao-buybar__amt {
+      font-family:var(--font-display); font-size:20px; font-weight:700;
+      color:var(--color-accent); line-height:1.2;
+    }
+    .mao-buybar__btn {
+      flex:none; display:grid; place-items:center;
+      min-height:48px; padding:0 22px; border-radius:999px;
+      background:var(--green-500); color:#fff;
+      font-size:15px; font-weight:700; text-decoration:none;
+      box-shadow:0 4px 14px rgba(22,185,122,.34);
+    }
+    .mao-buybar__btn:hover { color:#fff; text-decoration:none; }
+    .mao-buybar__btn:active { transform:scale(.97); }
+    /* 購買列會蓋住頁尾最下緣，留出等高的空間 */
+    body:has(.mao-buybar) .mao-footer { padding-bottom:calc(74px + env(safe-area-inset-bottom,0px)); }
+    /* LINE 按鈕讓位給購買列 */
+    body:has(.mao-buybar) .mao-line-fab { bottom:calc(84px + env(safe-area-inset-bottom,0px)); }
+  }
+
+  /* ── 手機：壓縮 header，第一屏能看到更多內容 ────────── */
+  @media (max-width:560px) {
+    .mao-headbar { padding:8px 16px !important; gap:10px !important; }
+    .mao-chiprow { padding:8px 16px !important; }
+    .mao-header .mao-headbar > div:first-child > div:first-child {
+      width:34px !important; height:34px !important;
+    }
+    .mao-header .mao-headbar span { font-size:17px !important; }
+
+    /* 主視覺：少一點留白，標題早一點出現 */
+    .mao-hero { padding:24px 16px 8px !important; gap:24px !important; }
+    /* 兩顆主要 CTA 在手機各佔一半、等寬，比擠成一排好按 */
+    .mao-hero-cta { gap:10px !important; }
+    .mao-hero-cta > * { flex:1 1 0; min-width:0; display:block; }
+    /* 中間包一層 display:contents，所以直接指定 design system 的按鈕本體 */
+    .mao-hero-cta .nf-btn { width:100%; }
+
+    /* 三張分類卡直向堆疊要滑掉快 800px。改成橫式（圖左、文右），
+       同樣的資訊量壓到約三分之一高度，一眼就看完三個分類 */
+    .mao-g-cats .mao-card {
+      display:grid !important; grid-template-columns:40% 1fr; align-items:stretch;
+    }
+    .mao-cat-img { height:auto !important; aspect-ratio:auto !important; min-height:112px; }
+    .mao-g-cats .mao-card > div:last-child {
+      padding:14px 16px !important; display:flex; flex-direction:column; justify-content:center;
+    }
+    .mao-g-cats .mao-card > div:last-child > div:first-child { font-size:18px !important; }
+
+    /* 左右邊距 20 → 16，內容寬一點 */
+    .mao-hero, .mao-footgrid { padding-left:16px !important; padding-right:16px !important; }
+  }
+
+  /* ── 手機：商品列表的篩選列黏在 header 下面 ──────────
+     滑到列表中間仍然可以直接換篩選，不用滑回頂端 */
+  @media (max-width:820px) {
+    .mao-filters {
+      position:sticky; top:var(--mao-header-h); z-index:30;
+      background:var(--bg-canvas);
+      margin:0 -20px 20px !important; padding:10px 20px 10px !important;
+      border-bottom:1px solid var(--border-subtle);
+    }
+  }
+  @media (max-width:560px) {
+    .mao-filters { margin:0 -16px 18px !important; padding:10px 16px !important; gap:8px !important; }
+  }
+
+  /* 商品列表頁：header 的分類 chip 列和頁內篩選列做同一件事，兩個疊在一起
+     會吃掉近 200px 的螢幕高度。手機只留頁內篩選列（它才是有選取狀態的那個）。
+     .mao-filters 只存在於商品列表頁，所以用 :has() 判斷目前是哪個頁面。 */
+  @media (max-width:820px) {
+    body:has(.mao-filters) .mao-chiprow { display:none !important; }
+  }
+
+  /* ── 手機：頁尾四段堆疊太長，改 2 欄 ────────────────── */
+  @media (max-width:560px) {
+    .mao-footgrid {
+      grid-template-columns:repeat(2,1fr) !important;
+      gap:22px 16px !important; padding-top:34px !important; padding-bottom:24px !important;
+    }
+    /* 品牌簡介橫跨兩欄 */
+    .mao-footgrid > div:first-child { grid-column:1 / -1; }
+    /* 頁尾連結的點擊區加大到好按的高度 */
+    .mao-footgrid span[onclick] { display:block; padding:5px 0; }
+  }
+
+  /* ── 手機觸控目標：Apple HIG / Material 都建議至少 44px ──
+     量測後這幾個原本只有 20–37px，手指容易點空 */
+  @media (max-width:820px) {
+    .mao-chiprow { padding-top:6px !important; padding-bottom:6px !important; }
+    .mao-chiprow > * { min-height:44px; }
+    .mao-back { min-height:44px; display:inline-flex; align-items:center; }
+    .mao-seeall {
+      min-height:44px; display:inline-flex; align-items:center;
+      padding:0 0 0 12px !important;
+    }
+    .mao-filters > div > * { min-height:44px; display:flex; align-items:center; }
+  }
 </style>
 </helmet>
 
 <div style="min-height:100vh;background:var(--bg-canvas)">
 
-  <header style="position:sticky;top:0;z-index:40;background:rgba(255,255,255,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-subtle)">
-    <div style="max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px">
+  <header class="mao-header" style="position:sticky;top:0;z-index:40;background:rgba(255,255,255,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-subtle)">
+    <div class="mao-headbar" style="max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px">
       <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:11px;cursor:pointer;flex:none">
         <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#cfe3c4;flex:none;position:relative">
           <image-slot id="mao-logo" shape="circle" src="uploads/assets-1787915189458-w4og.webp" placeholder="logo"></image-slot>
@@ -139,11 +272,19 @@
       </div>
 
       <button class="mao-burger" onClick="{{ toggleMenu }}" style="margin-left:auto;place-items:center;width:42px;height:42px;border-radius:12px;border:1px solid var(--border-default);background:#fff;cursor:pointer;flex:none">
-        <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
-          <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
-          <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
-          <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
-        </div>
+        <sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+            <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
+            <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
+            <div style="width:18px;height:2px;background:var(--ink-800);border-radius:2px"></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:relative;width:18px;height:18px">
+            <div style="position:absolute;top:8px;left:0;width:18px;height:2px;background:var(--ink-800);border-radius:2px;transform:rotate(45deg)"></div>
+            <div style="position:absolute;top:8px;left:0;width:18px;height:2px;background:var(--ink-800);border-radius:2px;transform:rotate(-45deg)"></div>
+          </div>
+        </sc-if>
       </button>
     </div>
 
@@ -161,7 +302,7 @@
     </sc-if>
 
     <div style="border-top:1px solid var(--border-subtle);background:#fff">
-      <div style="max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto">
+      <div class="mao-chiprow" style="max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto">
         <sc-for list="{{ quickCats }}" as="c" hint-placeholder-count="4">
           <button onClick="{{ c.go }}" style="flex:none;background:var(--ink-50);border:none;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;white-space:nowrap" style-hover="background:var(--color-primary-tint);color:var(--color-primary-press)">{{ c.label }}</button>
         </sc-for>
@@ -171,12 +312,12 @@
 
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <div>
-    <section style="max-width:1180px;margin:0 auto;padding:52px 20px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;align-items:center">
+    <section class="mao-hero" style="max-width:1180px;margin:0 auto;padding:52px 20px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;align-items:center">
       <div>
         <div style="display:inline-flex;align-items:center;gap:8px;background:var(--color-primary-tint);color:var(--color-primary-press);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:20px">原型食材 · 成分表短到能一口氣念完</div>
         <h1 style="font-family:var(--font-display);font-size:clamp(34px,5.2vw,54px);line-height:1.15;margin:0 0 18px;letter-spacing:-0.5px;text-wrap:pretty">你家那顆毛球<br>又要開始耍脾氣了嗎</h1>
         <p style="font-size:17px;line-height:1.75;color:var(--text-secondary);margin:0 0 28px;max-width:44ch;text-wrap:pretty">零食、凍乾、飼料，貓派狗派都收。我們只挑看得出原本長什麼樣的食材，剩下的交給你家那位美食評論家去打分數。</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="mao-hero-cta" style="display:flex;gap:12px;flex-wrap:wrap">
           <div onClick="{{ goShopAll }}">
             <x-import component-from-global-scope="NofatDesignSystem_2c47dc.Button" size="lg" hint-size="auto,54px">開始獻上貢品</x-import>
           </div>
@@ -198,8 +339,8 @@
     <section style="max-width:1180px;margin:0 auto;padding:44px 20px">
       <div class="mao-g-cats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
         <sc-for list="{{ cats }}" as="c" hint-placeholder-count="3">
-          <div onClick="{{ c.go }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
-            <div style="position:relative;width:100%;height:150px;background:#cfe3c4">
+          <div class="mao-card" onClick="{{ c.go }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
+            <div class="mao-cat-img" style="position:relative;width:100%;height:150px;background:#cfe3c4">
               <image-slot id="{{ c.slot }}" shape="rect" src="{{ c.img }}" placeholder="{{ c.label }} 分類圖"></image-slot>
             </div>
             <div style="padding:18px">
@@ -214,11 +355,11 @@
     <section style="max-width:1180px;margin:0 auto;padding:20px 20px 44px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:20px">
         <h2 style="font-family:var(--font-display);font-size:clamp(24px,3vw,32px);margin:0">本月毛孩點播率最高</h2>
-        <button onClick="{{ goShopAll }}" style="background:none;border:none;color:var(--color-primary-press);font-size:14px;font-weight:700;cursor:pointer;padding:0;white-space:nowrap">看全部 →</button>
+        <button class="mao-seeall" onClick="{{ goShopAll }}" style="background:none;border:none;color:var(--color-primary-press);font-size:14px;font-weight:700;cursor:pointer;padding:0;white-space:nowrap">看全部 →</button>
       </div>
       <div class="mao-g-hot" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
         <sc-for list="{{ hot }}" as="p" hint-placeholder-count="4">
-          <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
+          <div class="mao-card" onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
             <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
               <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
               <div style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.9);backdrop-filter:blur(6px);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;color:var(--color-accent)">{{ p.badge }}</div>
@@ -347,7 +488,7 @@
   <sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
   <section style="max-width:1180px;margin:0 auto;padding:40px 20px 60px">
     <h1 style="font-family:var(--font-display);font-size:clamp(26px,4vw,38px);margin:0 0 20px">全部商品</h1>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px">
+    <div class="mao-filters" style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px">
       <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
         <sc-for list="{{ petFilters }}" as="f" hint-placeholder-count="3">
           <div onClick="{{ f.pick }}" style="flex:none">
@@ -366,7 +507,7 @@
     <div style="font-size:14px;color:var(--text-tertiary);margin-bottom:16px">共 {{ shownCount }} 件商品</div>
     <div class="mao-g-shop" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px">
       <sc-for list="{{ shown }}" as="p" hint-placeholder-count="6">
-        <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
+        <div class="mao-card" onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
           <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
             <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
           </div>
@@ -386,8 +527,16 @@
   </sc-if>
 
   <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+  <!-- 手機常駐購買列：滑到頁面下方也能直接下單，不必再滑回上面 -->
+  <div class="mao-buybar">
+    <div class="mao-buybar__info">
+      <div class="mao-buybar__name">{{ current.name }}</div>
+      <div class="mao-buybar__amt">NT$ {{ current.price }}</div>
+    </div>
+    <a class="mao-buybar__btn" href="{{ current.url }}" target="_blank" rel="noopener noreferrer">到賣貨便下單</a>
+  </div>
   <section style="max-width:1180px;margin:0 auto;padding:28px 20px 60px">
-    <button onClick="{{ goShopAll }}" style="background:none;border:none;padding:0;margin-bottom:22px;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer">← 回到商品列表</button>
+    <button class="mao-back" onClick="{{ goShopAll }}" style="background:none;border:none;padding:8px 14px 8px 0;margin-bottom:14px;font-size:15px;font-weight:700;color:var(--text-secondary);cursor:pointer">← 回到商品列表</button>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:36px;align-items:start">
       <div style="position:relative;width:100%;aspect-ratio:1/1;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card);background:#cfe3c4">
         <image-slot id="{{ current.slot }}" shape="rect" src="{{ current.img }}" placeholder="{{ current.name }} 商品照"></image-slot>
@@ -426,7 +575,7 @@
       <h2 style="font-family:var(--font-display);font-size:24px;margin:0 0 18px">也可以看看</h2>
       <div class="mao-g-rel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px">
         <sc-for list="{{ related }}" as="p" hint-placeholder-count="3">
-          <div onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
+          <div class="mao-card" onClick="{{ p.open }}" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;transition:transform 160ms ease" style-hover="transform:translateY(-3px)">
             <div class="mao-card-img" style="position:relative;width:100%;aspect-ratio:1/1;background:#cfe3c4">
               <image-slot id="{{ p.slot }}" shape="rect" src="{{ p.img }}" placeholder="{{ p.name }}"></image-slot>
             </div>
@@ -441,8 +590,8 @@
   </section>
   </sc-if>
 
-  <footer style="background:var(--ink-900);color:var(--ink-200)">
-    <div style="max-width:1180px;margin:0 auto;padding:48px 20px 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px">
+  <footer class="mao-footer" style="background:var(--ink-900);color:var(--ink-200)">
+    <div class="mao-footgrid" style="max-width:1180px;margin:0 auto;padding:48px 20px 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px">
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
           <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:#cfe3c4;flex:none;position:relative">
@@ -587,7 +736,7 @@ class Component extends DCLogic {
     return {
       isHome: view === "home", isShop: view === "shop",
       isProduct: view === "product", isAbout: view === "about",
-      menuOpen, toggleMenu: () => this.setState({ menuOpen: !menuOpen }),
+      menuOpen, menuClosed: !menuOpen, toggleMenu: () => this.setState({ menuOpen: !menuOpen }),
       goHome: () => this.nav({ view:"home" }),
       goShopAll: () => goShop("all"),
       goFlow, goAbout,
@@ -654,6 +803,29 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+// sticky 篩選列的 top 需要跟 header 實際高度一致。寫死 px 會因為字型載入、
+// 使用者字級設定而失準，所以在執行時量測 headbar + chip 列的高度後寫回變數。
+// （量的是收合狀態的兩列，不含展開的選單面板，避免選單開關時篩選列跳動）
+(function () {
+  var queued = false;
+  function sync() {
+    queued = false;
+    var bar = document.querySelector('.mao-headbar');
+    var chips = document.querySelector('.mao-chiprow');
+    if (!bar && !chips) return;
+    var h = (bar ? bar.offsetHeight : 0) + (chips ? chips.offsetHeight : 0) + 2;
+    document.documentElement.style.setProperty('--mao-header-h', h + 'px');
+  }
+  function schedule() { if (!queued) { queued = true; requestAnimationFrame(sync); } }
+  addEventListener('load', schedule);
+  addEventListener('resize', schedule);
+  addEventListener('orientationchange', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  // 元件重新渲染會換掉 header 節點，childList 變動時重新量測
+  new MutationObserver(schedule).observe(document.documentElement, { subtree: true, childList: true });
+})();
 </script>
 </body>
 </html>
