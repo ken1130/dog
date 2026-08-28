@@ -1,0 +1,8 @@
+/* nofat — webfonts
+   Display & numerals: Outfit (geometric, sporty, great tabular figures)
+   Body & UI: Plus Jakarta Sans (warm humanist-geometric, highly readable)
+   Chinese: PingFang SC (native iOS) first, Noto Sans SC web fallback.
+   Substitution note: nofat has no licensed brand font yet — these are
+   Google Fonts stand-ins chosen for the warm/energetic tone. Swap in
+   licensed binaries + @font-face here when available. */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap");

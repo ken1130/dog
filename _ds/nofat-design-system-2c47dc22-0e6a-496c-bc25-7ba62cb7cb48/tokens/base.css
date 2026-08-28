@@ -1,0 +1,23 @@
+/* nofat — light base resets used by specimen cards & kits.
+   Scoped lightly so consumers can opt in. */
+:root {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.nf-body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+}
+
+/* tabular numerals helper for stat/number contexts */
+.nf-tnum {
+  font-family: var(--font-number);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}

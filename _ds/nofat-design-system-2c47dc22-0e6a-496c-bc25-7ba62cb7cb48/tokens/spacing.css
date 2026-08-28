@@ -1,0 +1,27 @@
+/* nofat — spacing scale (4px base) + layout tokens. */
+:root {
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  40px;
+  --space-9:  48px;
+  --space-10: 64px;
+  --space-12: 80px;
+
+  /* layout */
+  --screen-pad:    20px; /* default horizontal screen padding */
+  --gap-card:      16px; /* gap between stacked cards */
+  --card-pad:      18px; /* inner padding of cards */
+  --card-pad-lg:   20px;
+  --safe-top:      env(safe-area-inset-top, 0px);
+  --safe-bottom:   env(safe-area-inset-bottom, 0px);
+  --appbar-h:      52px;
+  --bottomnav-h:   58px;
+  --device-w:      390px; /* iPhone reference width */
+  --device-h:      844px;
+}

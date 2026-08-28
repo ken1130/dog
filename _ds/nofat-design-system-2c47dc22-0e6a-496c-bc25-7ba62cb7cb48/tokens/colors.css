@@ -1,0 +1,90 @@
+/* nofat — color tokens. Light theme, warm-green tinted neutrals.
+   Base scales first, semantic aliases at the bottom. */
+:root {
+  /* ---- Brand green (health / vitality / "done") ---- */
+  --green-50:  #ECFBF3;
+  --green-100: #D2F4E2;
+  --green-200: #A8E9C8;
+  --green-300: #6FD9A6;
+  --green-400: #36C685;
+  --green-500: #16B97A; /* primary */
+  --green-600: #0E9E66;
+  --green-700: #0B7E52;
+  --green-800: #0A6243;
+  --green-900: #074733;
+
+  /* ---- Accent coral (warmth / appetite / energy / calories) ---- */
+  --coral-50:  #FFF1EC;
+  --coral-100: #FFE0D4;
+  --coral-200: #FFC3AC;
+  --coral-300: #FF9E7C;
+  --coral-400: #FF7E54;
+  --coral-500: #FF6A3D; /* accent */
+  --coral-600: #ED5226;
+  --coral-700: #C53E18;
+
+  /* ---- Warm-tinted neutrals (ink) ---- */
+  --ink-900: #14201B; /* primary text */
+  --ink-800: #20302A;
+  --ink-700: #2E3B35;
+  --ink-600: #475149;
+  --ink-500: #5E6B64; /* secondary text */
+  --ink-400: #8A958E; /* tertiary text / placeholder */
+  --ink-300: #B7C0BA;
+  --ink-200: #DCE3DE; /* borders */
+  --ink-150: #E6EBE7;
+  --ink-100: #EDF1EE; /* sunken surface */
+  --ink-50:  #F5F8F6;
+  --white:   #FFFFFF;
+
+  /* ---- Supporting hues ---- */
+  --amber-100: #FFF1D6;
+  --amber-500: #FFB020; /* warning */
+  --amber-700: #B97400;
+  --red-100:   #FDE2E3;
+  --red-500:   #F2545B; /* gentle danger / "skipped" */
+  --red-700:   #C5343B;
+  --sky-100:   #DEF1FB;
+  --sky-500:   #2BA7E0; /* info / hydration */
+  --sky-700:   #1A7BAA;
+  --violet-500:#7C6BF0; /* sleep / rest accent */
+
+  /* =====================================================
+     Semantic aliases — use THESE in components
+     ===================================================== */
+  --bg-canvas:        #F4F7F4; /* app background */
+  --bg-canvas-warm:   #FBF7F3; /* warm alt background (review/onboarding) */
+  --surface-card:     var(--white);
+  --surface-sunken:   var(--ink-100);
+  --surface-raised:   var(--white);
+  --surface-overlay:  rgba(20, 32, 27, 0.46);
+
+  --text-primary:     var(--ink-900);
+  --text-secondary:   var(--ink-500);
+  --text-tertiary:    var(--ink-400);
+  --text-on-primary:  var(--white);
+  --text-on-accent:   var(--white);
+  --text-link:        var(--green-700);
+
+  --color-primary:        var(--green-500);
+  --color-primary-hover:  var(--green-600);
+  --color-primary-press:  var(--green-700);
+  --color-primary-soft:   var(--green-100);
+  --color-primary-tint:   var(--green-50);
+
+  --color-accent:        var(--coral-500);
+  --color-accent-hover:  var(--coral-600);
+  --color-accent-soft:   var(--coral-100);
+  --color-accent-tint:   var(--coral-50);
+
+  --color-calorie:    var(--coral-600); /* calorie numerals */
+  --color-success:    var(--green-500);
+  --color-warning:    var(--amber-500);
+  --color-danger:     var(--red-500);
+  --color-info:       var(--sky-500);
+
+  --border-subtle:   var(--ink-150);
+  --border-default:  var(--ink-200);
+  --border-strong:   var(--ink-300);
+  --focus-ring:      rgba(22, 185, 122, 0.40);
+}

@@ -1,0 +1,41 @@
+/* nofat — typography tokens. Mobile-first iOS scale. */
+:root {
+  --font-display: "Outfit", "PingFang SC", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body:    "Plus Jakarta Sans", "PingFang SC", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-number:  "Outfit", "Plus Jakarta Sans", sans-serif;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extra:    800;
+
+  /* font-size / line-height pairs */
+  --fs-display-xl: 34px; --lh-display-xl: 40px; /* hero headline */
+  --fs-display-lg: 28px; --lh-display-lg: 34px;
+  --fs-title-1:    24px; --lh-title-1:    30px;
+  --fs-title-2:    20px; --lh-title-2:    27px;
+  --fs-title-3:    17px; --lh-title-3:    24px; /* card titles */
+  --fs-body-lg:    17px; --lh-body-lg:    26px;
+  --fs-body:       15px; --lh-body:       23px; /* default body */
+  --fs-body-sm:    13px; --lh-body-sm:    19px;
+  --fs-caption:    12px; --lh-caption:    16px;
+  --fs-overline:   11px; --lh-overline:   14px;
+
+  /* numerals (tabular) */
+  --fs-num-hero:   44px; --lh-num-hero:   46px; /* big calorie / weight-trend */
+  --fs-num-lg:     28px; --lh-num-lg:     32px;
+  --fs-num-md:     20px; --lh-num-md:     24px;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.02em;
+  --tracking-overline: 0.12em;
+
+  /* ---- semantic text role aliases ---- */
+  --text-display:  var(--weight-bold) var(--fs-display-lg)/var(--lh-display-lg) var(--font-display);
+  --text-title:    var(--weight-bold) var(--fs-title-1)/var(--lh-title-1) var(--font-display);
+  --text-heading:  var(--weight-semibold) var(--fs-title-3)/var(--lh-title-3) var(--font-display);
+  --text-body:     var(--weight-medium) var(--fs-body)/var(--lh-body) var(--font-body);
+  --text-label:    var(--weight-semibold) var(--fs-body)/20px var(--font-body);
+}
